@@ -1,0 +1,3 @@
+rootProject.name = 'RelayReactNative'
+
+include ':app'

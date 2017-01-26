@@ -1,0 +1,192 @@
+input createItemInput {
+  name: String!
+  content: String!
+  clientMutationId: String
+}
+
+type createItemPayload {
+  viewer: User
+  itemEdge: ItemEdge
+  clientMutationId: String
+}
+
+# An item of something
+type Item implements Node {
+  # The ID of an object
+  id: ID!
+
+  # An item name
+  name: String
+
+  # An item content
+  content: String
+
+  # An item tags
+  tags(after: String, first: Int, before: String, last: Int): TagConnection
+}
+
+# A connection to a list of items.
+type ItemConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ItemEdge]
+  total: Int
+}
+
+# An edge in a connection.
+type ItemEdge {
+  # The item at the end of the edge
+  node: Item
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input linkInput {
+  itemId: ID!
+  tagId: ID!
+  clientMutationId: String
+}
+
+type linkPayload {
+  itemEdge: ItemEdge
+  tagEdge: TagEdge
+  item: Item
+  tag: Tag
+  clientMutationId: String
+}
+
+type Mutation {
+  createItem(input: createItemInput!): createItemPayload
+  removeItem(input: removeItemInput!): removeItemPayload
+  updateItem(input: updateItemInput!): updateItemPayload
+  link(input: linkInput!): linkPayload
+  unlink(input: unlinkInput!): unlinkPayload
+}
+
+# An object with an ID
+interface Node {
+  # The id of the object.
+  id: ID!
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+}
+
+type Query {
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
+  viewer: User
+}
+
+input removeItemInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type removeItemPayload {
+  removedItemID: ID
+  viewer: User
+  clientMutationId: String
+}
+
+# Tag for items
+type Tag implements Node {
+  # The ID of an object
+  id: ID!
+
+  # The name of the tag
+  name: String
+
+  # An tag items
+  items(after: String, first: Int, before: String, last: Int): ItemConnection
+}
+
+# A connection to a list of items.
+type TagConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [TagEdge]
+  total: Int
+}
+
+# An edge in a connection.
+type TagEdge {
+  # The item at the end of the edge
+  node: Tag
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input unlinkInput {
+  itemId: ID!
+  tagId: ID!
+  clientMutationId: String
+}
+
+type unlinkPayload {
+  unlinkedItemID: ID
+  unlinkedTagID: ID
+  item: Item
+  tag: Tag
+  clientMutationId: String
+}
+
+input updateItemInput {
+  id: ID!
+  name: String
+  content: String
+  clientMutationId: String
+}
+
+type updateItemPayload {
+  item: Item
+  clientMutationId: String
+}
+
+# View of the app
+type User implements Node {
+  # The ID of an object
+  id: ID!
+
+  # Name of the user
+  name: String
+
+  # user item by id
+  item(
+    # The ID of an object
+    id: ID!
+  ): Item
+
+  # user items
+  items(after: String, first: Int, before: String, last: Int): ItemConnection
+
+  # user tag by id
+  tag(
+    # The ID of an object
+    id: ID!
+  ): Tag
+
+  # user tags
+  tags(after: String, first: Int, before: String, last: Int): TagConnection
+}
