@@ -1,44 +1,71 @@
 import React, {Component} from 'react'
 import Relay from 'react-relay';
 
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
+import {
+    withRouter
+} from 'react-router-native';
 
-import Tag from '../tag/linked';
+import {
+	View,
+	Text,
+	TextInput,
+	StyleSheet,
+	Picker,
+	ScrollView,
+	TouchableHighlight
+} from 'react-native';
+
+import Hr from 'react-native-hr';
+
+import ViewerQuery from '../../../queries/viewer-query';
+import {createRenderer} from '../../../lib/relay-utils';
+
+import RelayStore from '../../../store';
+
+import TagPreview from '../tag/linked';
+
 import UpdateItemMutation from '../../../mutations/item/update';
 import LinkMutation from '../../../mutations/link';
+import UnlinkMutation from '../../../mutations/unlink';
+
+const styles = StyleSheet.create ({
+	container: {
+		padding: 3
+	},
+	header: {
+		paddingTop: 40,
+		paddingLeft: 10,
+		paddingBottom: 40,
+		fontSize: 30,
+		fontWeight: 'bold',
+		backgroundColor: '#FFF',
+		borderBottomColor: '#DDD',
+		borderBottomWidth: 1
+	},
+	input: {
+		height: 70,
+		fontSize: 20,
+		color: '#777',
+		padding: 20,
+		backgroundColor: '#FFF',
+		borderBottomColor: '#DDD',
+		borderBottomWidth: 1
+    },
+    picker: {
+		height: 70,
+		padding: 20,
+		backgroundColor: '#FFF',
+		borderColor: '#DDD',
+		borderWidth: 1
+    }
+})
 
 const limit = 20;
 
-const AddTagControl = ({tags, selected, onSelect}) => {
-	const availableTags = tags.edges.filter (
-		({node: tag}) => !selected.edges.find (
-			({node}) => node.id === tag.id
-		)
-	);
+const Item = Picker.Item;
 
-	return (
-		<DropdownButton
-			pullRight
-			title="Tag"
-			id="add-tag"
-			bsSize="large"
-			onSelect={onSelect}>
 
-			{availableTags.map (({node}) => (
-				<MenuItem key={node.id} eventKey={node.id}>
-					{node.name}
-				</MenuItem>
-			))}
-		</DropdownButton>
-	);
-
-}
-
-class Item extends Component {
+class ItemPreview extends Component {
 
 	constructor (props) {
 		const {name, content, tags} = props.viewer.item;
@@ -46,103 +73,136 @@ class Item extends Component {
 		super (props);
 
 		this.state = {name, content, tags};
+		this.done = true;
 	}
 
-	onChange = (e) => {
-		const {name, value} = e.target;
-
-		this.setState ({[name]: value});
-	}
-
-	onTagAdd = (id, e) => {
+	onTagAdd = (id) => {
 		const {item, tags} = this.props.viewer;
 		const {node} = tags.edges.find (
 			({node}) => node.id === id
 		);
 
-		Relay.Store.commitUpdate (
+		this.setState ({selected: id});
+
+		RelayStore.commitUpdate (
 			new LinkMutation ({
 				tag: node,
 				item: item
 			})
 		);
-
-		e.preventDefault ();
 	}
 
-	onSave = (e) => {
+	onSave = () => {
 		const {item} = this.props.viewer;
 		const {name, content} = this.state;
 
-		Relay.Store.commitUpdate (
+		RelayStore.commitUpdate (
 			new UpdateItemMutation ({item, name, content})
 		);
+	}
 
-		e.preventDefault ();
+	onNavigate = (id) => {
+		this.props.router.push ('/tag/' + id);
+	}
+
+	onTagRemove = (tag) => {
+		const {item} = this.props.viewer;
+
+		RelayStore.commitUpdate (
+			new UnlinkMutation ({
+				tag,
+				item: item
+			})
+		);
 	}
 
 	render () {
 		const {item, tags} = this.props.viewer;
 		const {tags: itemTags} = item;
 
-		const {content, name} = this.state;
+		const {content, name, selected} = this.state;
+
+		const {onNavigate, onTagRemove, onSave, onTagAdd} = this;
+
+		const availableTags = tags.edges.filter (
+			({node: tag}) => tag.id === selected || !itemTags.edges.find (
+				({node}) => node.id === tag.id
+			)
+		);
+
 
 		return (
-			<form className="item form">
+			<View style={styles.container}>
 
-				<h1>{item.name}</h1>
+				<Text style={styles.header}>{name}</Text>
 
-				<hr/>
+				<TextInput
+					underlineColorAndroid='transparent'
+          			style={styles.input}
+          			placeholder="item name"
+          			value={name}
+          			onChangeText={(name) => this.setState ({name})}/>
 
-				<FormGroup controlId="item-name">
-					<FormControl
-						type="text"
-						name="name"
-						value={name}
-						onChange={this.onChange}
-						placeholder="item name"/>
-				</FormGroup>
+				<TextInput
+					underlineColorAndroid='transparent'
+          			style={styles.input}
+          			multiline={true}
+          			numberOfLines={4}
+          			placeholder="item content"
+          			value={content}
+          			onChangeText={(content) => this.setState ({content})}/>
 
-				<FormGroup controlId="item-content">
-					<FormControl
-						rows={4}
-						name="content"
-						value={content}
-						onChange={this.onChange}
-						componentClass="textarea"
-						placeholder="item content"/>
-				</FormGroup>
+          		<View>
+          			{itemTags.edges.map (({node}) =>
+          				<TagPreview
+          					onNavigate={onNavigate}
+          					onRemove={onTagRemove}
+          					tag={node}
+          					key={node.id}/>
+          			)}
+          		</View>
 
-				<div className="clearfix">
-					<div className="pull-right">
-						<AddTagControl
-							tags={tags}
-							selected={itemTags}
-							onSelect={this.onTagAdd}/>
-					</div>
+				<Picker
+					style={styles.picker}
+					selectedValue={selected}
+					multiple={true}
+					onValueChange={(selected) => {
+						this.onTagAdd (selected);
+					}}>
 
-					<ul className="items-list list-inline">
-						{itemTags.edges.map (({node}) => (
-							<li key={node.id}>
-								<Tag tag={node} item={item}/>
-							</li>
-						))}
-					</ul>
-				</div>
+					{tags.edges.map (({node}) => (
+		        		<Item
+		        			key={node.id}
+		        			label={node.name || ''}
+		        			value={node.id} />
+					))}
 
-				<hr/>
+				</Picker>
 
-				<Button
-					bsSize="large"
-					className="btn-default"
-					onClick={this.onSave}>SAVE</Button>
-			</form>
+
+          		<TouchableHighlight
+          			onPress={onSave}
+          			style={{
+          				alignItems: 'center',
+          				backgroundColor: '#337ab7',
+          				borderColor: '#337ab7',
+          				padding: 20,
+          			}}>
+          			<Text style={{
+          				fontSize: 20,
+          				color: '#FFF'
+          			}}>SAVE</Text>
+          		</TouchableHighlight>
+
+			</View>
 		);
 	}
 
 }
 
-export default Relay.createContainer(Item, {
+const ItemView = createRenderer (ItemPreview, {
+
+	queries: ViewerQuery,
 
 	initialVariables: {
 		id: null,
@@ -152,6 +212,7 @@ export default Relay.createContainer(Item, {
 	fragments: {
 		viewer: () => Relay.QL`
 			fragment on User {
+
 				item (id: $id) {
 					id,
 					name,
@@ -160,13 +221,12 @@ export default Relay.createContainer(Item, {
 					tags (first: $limit){
 						edges {
 							node {
-								id,
-								${Tag.getFragment ('tag')}
+								id
+								${TagPreview.getFragment ('tag')}
 							}
 						}
 					}
 
-					${UpdateItemMutation.getFragment ('item')}
 				}
 
 				tags (first: 20) {
@@ -181,3 +241,13 @@ export default Relay.createContainer(Item, {
 		`
 	}
 });
+
+export default withRouter ((props) =>
+	<ScrollView
+  		automaticallyAdjustContentInsets={false}
+  		scrollEventThrottle={200}>
+
+		<ItemView {...props}/>
+
+	</ScrollView>
+);

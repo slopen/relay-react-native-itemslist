@@ -1,43 +1,64 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import Link from 'react-router/lib/Link';
+import {
+	TouchableOpacity,
+	Text,
+  	View,
+	StyleSheet
+} from 'react-native';
 
-import UnlinkMutation from '../../../mutations/unlink';
 
-class LinkedTag extends Component {
-	removeItem = (e) => {
-		const {item, tag} = this.props;
-
-		Relay.Store.commitUpdate (
-			new UnlinkMutation ({
-				tag: tag,
-				item: item
-			})
-		);
-
-		e.preventDefault ();
+const styles = StyleSheet.create({
+	tag: {
+		borderWidth: 0.5,
+    	borderColor: '#d6d7da',
+    	padding: 20,
+    	backgroundColor: '#FFF',
+    	position: 'relative'
+	},
+	close: {
+		justifyContent: 'center',
+		position: 'absolute',
+		right: 0,
+		top: 0,
+		padding: 20,
+		paddingLeft: 30,
+		paddingRight: 30,
+		backgroundColor: '#F7F7F7'
 	}
+})
 
-	render () {
-		const {tag} = this.props;
 
-		return (
-			<div className="tag">
-				<Link to={'/tag/' + tag.id}>
-					{tag.name}
-				</Link>
+const TagPreview =  ((props) => {
+    const {tag} = props;
 
-				<a
-					href="#"
-					className="remove pull-right"
-					onClick={this.removeItem}>&times;</a>
-			</div>
-		);
-	}
-}
+    return (
+    	<TouchableOpacity
+    		underlayColor='transparent'
+    		onPress={() => props.onNavigate (tag.id)}>
 
-export default Relay.createContainer (LinkedTag, {
+    		<View style={styles.tag}>
+
+	        	<Text style={{
+	        		fontSize: 20
+	        	}}>{tag.name}</Text>
+
+	        	<TouchableOpacity
+	        		style={styles.close}
+	        		onPress={() => props.onRemove (tag)}>
+	        		<Text style={{
+	        			color: 'red',
+	        			fontSize: 20
+	        		}}>&times;</Text>
+	        	</TouchableOpacity>
+	        </View>
+
+    	</TouchableOpacity>
+    );
+});
+
+export default Relay.createContainer (TagPreview, {
 
 	fragments: {
 		tag: () => Relay.QL`

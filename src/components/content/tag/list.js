@@ -1,55 +1,58 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import Preview from './preview';
-import List from '../list';
-import ListMore from '../list/more';
-
-const limit = 5;
-
-class TagsList extends List {
-
-	getEdges () {
-		const {viewer} = this.props;
-		const {tags: {edges}} = viewer;
-
-		return edges;
-	}
-
-	render () {
-		const {viewer} = this.props;
-		const {tags: {edges}} = viewer;
-		const {pageInfo} = viewer.tags;
-
-		return (
-			<div>
-				<h1>Tags</h1>
-
-				<hr/>
-
-				<ul className="items-list list-unstyled">
-					{edges.map (({node}) => (
-						<li key={node.id}>
-							<Preview tag={node}/>
-						</li>
-					))}
-				</ul>
-
-				<hr/>
-
-				<ListMore
-					next={this.requestNext}
-					pageInfo={pageInfo}/>
-			</div>
-		);
-	}
-}
+import {
+    Header,
+    withRouter
+} from 'react-router-native';
 
 
-export default Relay.createContainer (TagsList, {
+import {
+  	TouchableOpacity,
+  	ScrollView,
+	Text,
+  	View,
+	StyleSheet
+} from 'react-native';
+
+import ViewerQuery from '../../../queries/viewer-query';
+import {createRenderer} from '../../../lib/relay-utils';
+
+import TagPreview from './preview';
+
+const TagsList = withRouter ((props) => {
+    const {viewer} = props;
+    const {tags} = viewer;
+
+    const onTagNavigate = (id) => {
+    	props.router.push ('/tag/' + id);
+    }
+
+    return (
+      	<View>
+        	<ScrollView
+          		automaticallyAdjustContentInsets={false}
+          		scrollEventThrottle={200}
+          		style={styles.scrollView}>
+
+          		{tags.edges.map (({node}) =>(
+          			<TagPreview
+          				tag={node}
+          				onNavigate={onTagNavigate}
+          				key={node.id}/>
+          		))}
+
+        	</ScrollView>
+       	</View>
+    );
+});
+
+export default createRenderer (TagsList, {
+
+	queries: ViewerQuery,
 
 	initialVariables: {
-		first: limit
+		first: 10
 	},
 
 	fragments: {
@@ -59,7 +62,7 @@ export default Relay.createContainer (TagsList, {
 					edges {
 						node {
 							id,
-							${Preview.getFragment ('tag')}
+							${TagPreview.getFragment ('tag')}
 						}
 					}
 					total
@@ -68,7 +71,14 @@ export default Relay.createContainer (TagsList, {
 					}
 				}
 			}
-		`
-	}
-
+		`,
+	},
 });
+
+const styles = StyleSheet.create({
+	center: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+})

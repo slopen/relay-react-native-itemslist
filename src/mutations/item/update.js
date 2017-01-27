@@ -2,16 +2,6 @@ import Relay from 'react-relay';
 
 export default class UpdateItemMutation extends Relay.Mutation {
 
-    static fragments = {
-        item: () => Relay.QL`
-            fragment on Item {
-                id,
-                name,
-                content
-            }
-        `
-    }
-
     getMutation () {
         return Relay.QL`
             mutation {

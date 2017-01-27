@@ -24,13 +24,7 @@ export default class RemoveItemMutation extends Relay.Mutation {
 				removedItemID
 
 				viewer {
-					items (first: 5) {
-						edges {
-							node {
-								id
-								name
-							}
-						}
+					items {
 						total
 					}
 				}

@@ -1,80 +1,116 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import Button from 'react-bootstrap/lib/Button';
-
-import Preview from './preview';
-import List from '../list';
-import ListMore from '../list/more';
-import CreateItemMutation from '../../../mutations/item/create';
+import {
+    Header,
+    withRouter
+} from 'react-router-native';
 
 
-const limit = 5;
+import {
+  	TouchableOpacity,
+  	ScrollView,
+	Text,
+  	View,
+	StyleSheet
+} from 'react-native';
 
-const Controls = ({add}) =>
-	<Button
-		bsSize="large"
-		className="btn-default"
-		onClick={add}>ADD</Button>
+import ViewerQuery from '../../../queries/viewer-query';
+import {createRenderer} from '../../../lib/relay-utils';
 
-class ItemsList extends List {
+import ItemPreview from './preview';
 
-	getEdges () {
+import RelayStore from '../../../store';
+import ItemRemoveMutation from '../../../mutations/item/remove';
+import ItemCreateMutation from '../../../mutations/item/create';
+
+const styles = StyleSheet.create({
+	container: {
+		padding: 3
+	}
+});
+
+class ItemsListComponent extends Component {
+
+	onItemNavigate = (id) => {
+    	this.props.router.push ('/item/' + id);
+    }
+
+	onItemRemove = (item) => {
 		const {viewer} = this.props;
-		const {items: {edges}} = viewer;
 
-		return edges;
-	}
+    	RelayStore.commitUpdate (
+    		new ItemRemoveMutation ({
+    			item: item,
+    			viewer: viewer
+    		})
+    	);
 
-	addItem = (e) => {
-		Relay.Store.commitUpdate (
-			new CreateItemMutation ({
-				name: 'new item',
-				content: 'new item content',
-				viewer: this.props.viewer
-			})
-		);
+    }
 
-		e.preventDefault();
-	}
+	onItemAdd = () => {
+		const {viewer} = this.props;
+
+    	RelayStore.commitUpdate (
+    		new ItemCreateMutation ({
+    			name: 'new item',
+    			content: 'new item content',
+    			viewer: viewer
+    		})
+    	);
+
+    }
 
 	render () {
-		const {viewer} = this.props;
-		const {items: {edges}} = viewer;
-		const {pageInfo} = viewer.items;
+		const {items} = this.props.viewer;
+		const {onItemNavigate, onItemRemove, onItemAdd} = this;
+
 
 		return (
-			<div>
-				<h1>Items</h1>
+	      	<View>
+	        	<ScrollView
+	          		automaticallyAdjustContentInsets={false}
+	          		scrollEventThrottle={200}
+	          		style={styles.container}>
 
-				<hr/>
+	          		<TouchableOpacity
+	          			onPress={onItemAdd}
+	          			style={{
+	          				alignItems: 'center',
+	          				backgroundColor: '#337ab7',
+	          				borderColor: '#337ab7',
+	          				padding: 20,
+	          			}}>
+	          			<Text style={{
+	          				fontSize: 20,
+	          				color: '#FFF'
+	          			}}>ADD</Text>
+	          		</TouchableOpacity>
 
-				<ul className="items-list list-unstyled">
-					{edges.map (({node}) => (
-						<li key={node.id}>
-							<Preview item={node} viewer={viewer}/>
-						</li>
-					))}
-				</ul>
+	          		{items.edges.map (({node}) =>(
+	          			<ItemPreview
+	          				item={node}
+	          				onNavigate={onItemNavigate}
+	          				onRemove={onItemRemove}
+	          				key={node.id}/>
+	          		))}
 
-				<hr/>
-
-				<ListMore
-					next={this.requestNext}
-					pageInfo={pageInfo}/>
-
-				<Controls
-					add={this.addItem}/>
-
-			</div>
+	        	</ScrollView>
+	       	</View>
 		);
 	}
 }
 
-export default Relay.createContainer(ItemsList, {
+const ItemsList = withRouter ((props) =>
+	<ItemsListComponent {...props}/>
+);
+
+export default createRenderer (ItemsList, {
+
+	queries: ViewerQuery,
 
 	initialVariables: {
-		first: limit
+		first: 10
 	},
 
 	fragments: {
@@ -85,7 +121,7 @@ export default Relay.createContainer(ItemsList, {
 					edges {
 						node {
 							id,
-							${Preview.getFragment ('item')}
+							${ItemPreview.getFragment ('item')}
 						}
 					}
 					total
@@ -94,6 +130,6 @@ export default Relay.createContainer(ItemsList, {
 					}
 				}
 			}
-		`
-	}
+		`,
+	},
 });

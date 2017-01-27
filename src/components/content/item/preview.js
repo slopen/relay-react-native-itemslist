@@ -1,38 +1,72 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import Link from 'react-router/lib/Link';
+import {
+    Header,
+    withRouter
+} from 'react-router-native';
 
-import RemoveItemMutation from '../../../mutations/item/remove';
 
-export class ItemPreview extends Component {
+import {
+	TouchableOpacity,
+  	ScrollView,
+	Text,
+  	View,
+	StyleSheet
+} from 'react-native';
 
-	removeItem = (e) => {
-		const {item, viewer} = this.props;
+import {createRenderer} from '../../../lib/relay-utils';
 
-		Relay.Store.commitUpdate (
-			new RemoveItemMutation({item, viewer})
-		);
-
-		e.preventDefault ();
+const styles = StyleSheet.create({
+	item: {
+		flex: 1,
+		borderWidth: 0.5,
+    	borderColor: '#d6d7da',
+    	padding: 20,
+    	backgroundColor: '#FFF',
+    	position: 'relative'
+	},
+	close: {
+		flex: 1,
+		justifyContent: 'center',
+		position: 'absolute',
+		right: 0,
+		top: 0,
+		padding: 20,
+		paddingLeft: 30,
+		paddingRight: 30,
+		backgroundColor: '#F7F7F7'
 	}
+})
 
-	render () {
-		const {item} = this.props;
 
-		return (
-			<div className="item">
-				<Link to={'/item/' + item.id}>{item.name}</Link>
+const ItemPreview =  ((props) => {
+    const {item} = props;
 
-				<a
-					href="#"
-					className="remove pull-right"
-					onClick={this.removeItem}>&times;</a>
-			</div>
-		);
-	}
+    return (
+    	<TouchableOpacity
+    		underlayColor='transparent'
+    		onPress={() => props.onNavigate (item.id)}>
 
-}
+    		<View style={styles.item}>
+
+	        	<Text style={{
+	        		fontSize: 20
+	        	}}>{item.name}</Text>
+
+	        	<TouchableOpacity
+	        		style={styles.close}
+	        		onPress={() => props.onRemove (item)}>
+	        		<Text style={{
+	        			color: 'red',
+	        			fontSize: 20
+	        		}}>&times;</Text>
+	        	</TouchableOpacity>
+	        </View>
+
+    	</TouchableOpacity>
+    );
+});
 
 export default Relay.createContainer (ItemPreview, {
 
@@ -44,4 +78,4 @@ export default Relay.createContainer (ItemPreview, {
 			}
 		`
 	}
-});
+})

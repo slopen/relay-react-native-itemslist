@@ -1,33 +1,50 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import Link from 'react-router/lib/Link';
+import {
+	TouchableOpacity,
+	Text,
+  	View,
+	StyleSheet
+} from 'react-native';
 
-export class TagPreview extends Component {
 
-	render () {
-		const {tag} = this.props;
-
-		return (
-			<div className="tag">
-				<Link to={'/tag/' + tag.id}>
-					{tag.name}
-				</Link>
-			</div>
-		);
+const styles = StyleSheet.create({
+	tag: {
+		borderWidth: 0.5,
+    	borderColor: '#d6d7da',
+    	padding: 20,
+    	backgroundColor: '#FFF'
 	}
+})
 
-}
+
+const TagPreview =  ((props) => {
+    const {tag} = props;
+
+    return (
+    	<TouchableOpacity
+    		underlayColor='transparent'
+    		onPress={() => props.onNavigate (tag.id)}>
+
+    		<View style={styles.tag}>
+
+	        	<Text style={{
+	        		fontSize: 20
+	        	}}>{tag.name}</Text>
+	        </View>
+
+    	</TouchableOpacity>
+    );
+});
 
 export default Relay.createContainer (TagPreview, {
 
 	fragments: {
 		tag: () => Relay.QL`
-			fragment on Node {
-				... on Tag {
-					id,
-					name
-				}
+			fragment on Tag {
+				id
+				name
 			}
 		`
 	}

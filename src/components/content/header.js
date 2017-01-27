@@ -1,66 +1,40 @@
 import React, {Component} from 'react';
 import Relay from 'react-relay';
 
-import browserHistory from 'react-router/lib/browserHistory';
-import Link from 'react-router/lib/Link';
-
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
-import Navbar from 'react-bootstrap/lib/Navbar';
+import {
+    Header,
+    withRouter
+} from 'react-router-native';
 
 
-const logo = require ('../../img/logo.jpeg');
+import ViewerQuery from '../../queries/viewer-query';
+import {createRenderer} from '../../lib/relay-utils';
 
-class Header extends Component {
+const AppHeader = withRouter ((props) => {
+    const {viewer, location} = props;
 
-	navigate (e) {
-		const href = e.target.getAttribute ('href');
+    const {pathname} = location;
 
-		browserHistory.push (href);
-		e.preventDefault ();
-	}
+    const currentType = pathname.match (/tag/) ? 'tags' : 'items';
+    const switchType = currentType === 'tags' ? 'items' : 'tags';
 
-	render () {
-		const {viewer} = this.props;
-		const {total: totalItems} = viewer.items;
-		const {total: totalTags} = viewer.tags;
+    const handleRightButtonPress = () => {
+        props.router.push ('/' + switchType);
+    };
 
-		return (
-			<Navbar>
-				<Navbar.Header>
-					<Navbar.Brand>
-						<Link to={'/'}>
-							<span className="logo">
-								<img src={logo}/>
-							</span>
-							<span className="hidden-xs">
-								Relay Items List
-							</span>
-						</Link>
-					</Navbar.Brand>
-				</Navbar.Header>
+    return (
+        <Header
+            {...props}
+            style={{backgroundColor: '#CCCCCC'}}
+            title={currentType + ' ' + viewer [currentType].total}
+            rightButtonText={switchType + ' ' + viewer [switchType].total}
+            onRightButtonPress={handleRightButtonPress}/>
+    );
+});
 
-				<Nav pullRight>
-					<NavItem
-						eventKey={1}
-						href="/item"
-						onClick={this.navigate}>
-						{totalItems} item{totalItems !== 1 ? 's' : ''}
-					</NavItem>
+export default createRenderer (AppHeader, {
 
-					<NavItem
-						eventKey={2}
-						href="/tag"
-						onClick={this.navigate}>
-						{totalTags} tag{totalTags !== 1 ? 's' : ''}
-					</NavItem>
-				</Nav>
-		</Navbar>
-		);
-	}
-}
-
-export default Relay.createContainer (Header, {
+	queries: ViewerQuery,
 
 	fragments: {
 		viewer: () => Relay.QL`
@@ -72,6 +46,6 @@ export default Relay.createContainer (Header, {
 					total
 				}
 			}
-		`
-	}
+		`,
+	},
 });

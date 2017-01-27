@@ -105,7 +105,9 @@ function createRendererInternal(
 	  queryConfig: this._computeQueryConfig(this.props),
 	};
 
-	render() {
+
+    render() {
+
 	  return (
 		<Relay.Renderer
 		  Container={RelayComponent}
@@ -120,8 +122,8 @@ function createRendererInternal(
 			  }
 			} else if (props) {
 			  if (renderFetched) {
-				return renderFetched({ ...this.props, ...props }, { done, stale });
-			  } else {
+                return renderFetched({ ...this.props, ...props }, { done, stale });
+              } else {
 				return <RelayComponent {...this.props} {...props} />;
 			  }
 			} else if (renderLoading) {
@@ -142,7 +144,9 @@ function createRendererInternal(
 	}
 
 	_computeQueryConfig(props: Object) {
-	  const params = queriesParams ? queriesParams(props) : {};
+        // TODO: proper pass props.routeParams from router
+	  const params = queriesParams ? queriesParams (props) :
+        (Object.keys (props.routeParams).length ? props.routeParams : {});
 
 	  // remove parenthesis ( )
 	  const name  = `relay_route_${RelayComponent.displayName}`.replace(/[\(|\)]/g, '_');

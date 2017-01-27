@@ -26,24 +26,26 @@ export default class UnlinkItemMutation extends Relay.Mutation {
 				itemEdge
 
 				tag {
-					items (first: 20){
-						edges {
-							node {
-								id
-								name
-							}
-						}
+					items (first: 10){
+                        edges{
+                            node{
+                                id
+                                name
+                            }
+                        }
+                        total
 					}
 				}
 
 				item {
-					tags (first: 20) {
-						edges {
-							node {
-								id
-								name
-							}
-						}
+					tags (first: 10) {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+						total
 					}
 				}
 
