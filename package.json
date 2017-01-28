@@ -7,6 +7,7 @@
     "android": "node node_modules/react-native/local-cli/cli.js run-android",
     "ios": "node node_modules/react-native/local-cli/cli.js run-ios",
     "lint": "./node_modules/eslint/bin/eslint.js src --quiet",
+    "server": "babel-node src/data/server",
     "test": "jest"
   },
   "dependencies": {
@@ -17,6 +18,7 @@
     "react-router-native": "^2.0.0-beta.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.16.0",
     "babel-jest": "18.0.0",
     "babel-eslint": "^7.0.0",
     "babel-preset-react-native": "1.9.1",
@@ -27,6 +29,9 @@
     "eslint-plugin-graphql": "^0.4.3",
     "eslint-plugin-import": "^2.0.0",
     "eslint-plugin-react": "^6.3.0",
+    "express": "4.14.0",
+    "express-graphql": "0.5.4",
+    "graphql-relay": "0.4.3",
     "jest": "18.1.0",
     "react-test-renderer": "15.4.2"
   },
