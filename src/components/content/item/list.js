@@ -9,28 +9,41 @@ import {
 
 import {
   	TouchableOpacity,
+  	ActivityIndicator,
   	ScrollView,
 	Text,
   	View,
 	StyleSheet
 } from 'react-native';
 
+
 import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
 
+import ScrollableList  from '../list';
 import ItemPreview from './preview';
 
 import RelayStore from '../../../store';
 import ItemRemoveMutation from '../../../mutations/item/remove';
 import ItemCreateMutation from '../../../mutations/item/create';
 
+
 const styles = StyleSheet.create({
 	container: {
 		padding: 3
+	},
+	loader: {
+    	flex: 1,
+    	height: 40,
+    	justifyContent: 'center',
+    	alignItems: 'center'
 	}
 });
 
-class ItemsListComponent extends Component {
+
+class ItemsListComponent extends ScrollableList {
+
+    getItems = () => this.props.viewer.items
 
 	onItemNavigate = (id) => {
     	this.props.router.push ('/item/' + id);
@@ -63,14 +76,20 @@ class ItemsListComponent extends Component {
 
 	render () {
 		const {items} = this.props.viewer;
-		const {onItemNavigate, onItemRemove, onItemAdd} = this;
+		const {
+			onItemNavigate,
+			onItemRemove,
+			onItemAdd,
+			onScroll
+		} = this;
 
 
 		return (
 	      	<View>
 	        	<ScrollView
+	        		onScroll={onScroll}
 	          		automaticallyAdjustContentInsets={false}
-	          		scrollEventThrottle={200}
+	          		scrollEventThrottle={250}
 	          		style={styles.container}>
 
 	          		<TouchableOpacity
@@ -95,6 +114,12 @@ class ItemsListComponent extends Component {
 	          				key={node.id}/>
 	          		))}
 
+	          		{this.state.loading ? (
+	          			<View style={styles.loader}>
+	          				<ActivityIndicator/>
+	          			</View>
+	          		) : null}
+
 	        	</ScrollView>
 	       	</View>
 		);
@@ -110,7 +135,7 @@ export default createRenderer (ItemsList, {
 	queries: ViewerQuery,
 
 	initialVariables: {
-		first: 10
+		first: ScrollableList.limit
 	},
 
 	fragments: {

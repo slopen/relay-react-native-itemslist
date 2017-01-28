@@ -19,40 +19,55 @@ import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
 
 import TagPreview from './preview';
+import ScrollableList from '../list';
 
-const TagsList = withRouter ((props) => {
-    const {viewer} = props;
-    const {tags} = viewer;
 
-    const onTagNavigate = (id) => {
+class TagsListComponent extends ScrollableList {
+
+	getItems = () => this.props.viewer.tags
+
+    onItemNavigate = (id) => {
     	props.router.push ('/tag/' + id);
     }
 
-    return (
-      	<View>
-        	<ScrollView
-          		automaticallyAdjustContentInsets={false}
-          		scrollEventThrottle={200}
-          		style={styles.scrollView}>
+    render () {
+    	const tags = this.getItems ();
 
-          		{tags.edges.map (({node}) =>(
-          			<TagPreview
-          				tag={node}
-          				onNavigate={onTagNavigate}
-          				key={node.id}/>
-          		))}
+		const {
+			onItemNavigate,
+			onScroll
+		} = this;
 
-        	</ScrollView>
-       	</View>
-    );
-});
+	    return (
+	      	<View>
+	        	<ScrollView
+	          		automaticallyAdjustContentInsets={false}
+	          		onScroll={onScroll}
+	          		scrollEventThrottle={250}>
+
+	          		{tags.edges.map (({node}) =>(
+	          			<TagPreview
+	          				tag={node}
+	          				onNavigate={onItemNavigate}
+	          				key={node.id}/>
+	          		))}
+
+	        	</ScrollView>
+	       	</View>
+	    );
+    }
+}
+
+const TagsList = withRouter ((props) =>
+	<TagsListComponent {...props}/>
+);
 
 export default createRenderer (TagsList, {
 
 	queries: ViewerQuery,
 
 	initialVariables: {
-		first: 10
+		first: ScrollableList.limit
 	},
 
 	fragments: {
@@ -75,10 +90,3 @@ export default createRenderer (TagsList, {
 	},
 });
 
-const styles = StyleSheet.create({
-	center: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-})
