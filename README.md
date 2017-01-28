@@ -25,13 +25,22 @@ adb reverse tcp:8081 tcp:8081
 Uses backend mock from any of:
 
 [relay-boilerplate-itemslist](https://github.com/slopen/relay-boilerplate-itemslist)
+
 [relay-boilerplate-itemslist-isomorphic](https://github.com/slopen/relay-boilerplate-itemslist-isomorphic)
 
 ```
 npm run server
 ```
-
 http://localhost:9000
+
+
+Setup GraphQL endpoints in `src/config.js`:
+```
+network: {
+    url: 'http://192.168.0.239:9000/graphql',
+    batchUrl: 'http://192.168.0.239:9000/batch'
+}
+```
 
 
 ## Deploy Android
