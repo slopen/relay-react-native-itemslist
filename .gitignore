@@ -21,9 +21,13 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+ios/RelayReactNative.xcodeproj/project.pbxproj
+ios/RelayReactNative/Info.plist
+
 
 # Android/IntelliJ
 #
+android/app/src/main/assets/
 build/
 .idea
 .gradle

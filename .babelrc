@@ -4,6 +4,6 @@
     ],
 
     "plugins": [
-        "./plugins/babelRelayPlugin.js"
+        "./foundation/babel-relay/babel-relay-plugin.js"
     ]
 }
