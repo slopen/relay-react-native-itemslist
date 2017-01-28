@@ -8,6 +8,13 @@
  */
 
 
+ const CONFIG = {
+ 	ITEMS: 50,
+ 	TAGS: 10,
+ 	TAGS_PER_ITEM: 3
+ }
+
+
 // Model types
 class User {}
 class Item {}
@@ -21,9 +28,7 @@ viewer.id = '1';
 viewer.name = 'Anonymous';
 
 
-const tagsPerItem = 3;
-
-const tags = [...Array (10)].map (
+const tags = [...Array (CONFIG.TAGS)].map (
 	(_, i) => Object.assign (new Tag (), {
 		id: `${i}`,
 		name: `tag ${i + 1}`
@@ -31,12 +36,12 @@ const tags = [...Array (10)].map (
 );
 
 let tagsCounter = 0;
-let items = [...Array (20)].map (
+let items = [...Array (CONFIG.ITEMS)].map (
 	(_, i) => Object.assign (new Item (), {
 		id: `${i}`,
 		name: `item ${i + 1}`,
 		content: `content ${i}`,
-		tags: [...Array (tagsPerItem)].map (
+		tags: [...Array (CONFIG.TAGS_PER_ITEM)].map (
 			() => {
 				if (!tags [tagsCounter]) {
 					tagsCounter = 0;
@@ -92,9 +97,9 @@ module.exports = {
 	},
 
 	createItem: (payload) => {
-		const id = getNewId (payload);
+		const id = getNewId ();
 
-		items.unshift (
+		items.push (
 			Object.assign (new Item (), {id}, payload)
 		);
 
