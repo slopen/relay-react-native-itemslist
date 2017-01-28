@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import Relay from 'react-relay';
 
 import {
-    withRouter
+	withRouter
 } from 'react-router-native';
 
 import {
@@ -15,7 +15,6 @@ import {
 	TouchableHighlight
 } from 'react-native';
 
-import Hr from 'react-native-hr';
 
 import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
@@ -50,14 +49,14 @@ const styles = StyleSheet.create ({
 		backgroundColor: '#FFF',
 		borderBottomColor: '#DDD',
 		borderBottomWidth: 1
-    },
-    picker: {
+	},
+	picker: {
 		height: 70,
 		padding: 20,
 		backgroundColor: '#FFF',
 		borderColor: '#DDD',
 		borderWidth: 1
-    }
+	}
 })
 
 const limit = 20;
@@ -124,12 +123,6 @@ class ItemPreview extends Component {
 
 		const {onNavigate, onTagRemove, onSave, onTagAdd} = this;
 
-		const availableTags = tags.edges.filter (
-			({node: tag}) => tag.id === selected || !itemTags.edges.find (
-				({node}) => node.id === tag.id
-			)
-		);
-
 
 		return (
 			<View style={styles.container}>
@@ -137,62 +130,60 @@ class ItemPreview extends Component {
 				<Text style={styles.header}>{name}</Text>
 
 				<TextInput
-					underlineColorAndroid='transparent'
-          			style={styles.input}
-          			placeholder="item name"
-          			value={name}
-          			onChangeText={(name) => this.setState ({name})}/>
+					underlineColorAndroid="transparent"
+					style={styles.input}
+					placeholder="item name"
+					value={name}
+					onChangeText={(name) => this.setState ({name})}/>
 
 				<TextInput
-					underlineColorAndroid='transparent'
-          			style={styles.input}
-          			multiline={true}
-          			numberOfLines={4}
-          			placeholder="item content"
-          			value={content}
-          			onChangeText={(content) => this.setState ({content})}/>
+					underlineColorAndroid="transparent"
+					style={styles.input}
+					multiline={true}
+					numberOfLines={4}
+					placeholder="item content"
+					value={content}
+					onChangeText={(content) => this.setState ({content})}/>
 
-          		<View>
-          			{itemTags.edges.map (({node}) =>
-          				<TagPreview
-          					onNavigate={onNavigate}
-          					onRemove={onTagRemove}
-          					tag={node}
-          					key={node.id}/>
-          			)}
-          		</View>
+				<View>
+					{itemTags.edges.map (({node}) =>
+						<TagPreview
+							onNavigate={onNavigate}
+							onRemove={onTagRemove}
+							tag={node}
+							key={node.id}/>
+					)}
+				</View>
 
 				<Picker
 					style={styles.picker}
 					selectedValue={selected}
 					multiple={true}
-					onValueChange={(selected) => {
-						this.onTagAdd (selected);
-					}}>
+					onValueChange={onTagAdd}>
 
 					{tags.edges.map (({node}) => (
-		        		<Item
-		        			key={node.id}
-		        			label={node.name || ''}
-		        			value={node.id} />
+						<Item
+							key={node.id}
+							label={node.name || ''}
+							value={node.id} />
 					))}
 
 				</Picker>
 
 
-          		<TouchableHighlight
-          			onPress={onSave}
-          			style={{
-          				alignItems: 'center',
-          				backgroundColor: '#337ab7',
-          				borderColor: '#337ab7',
-          				padding: 20,
-          			}}>
-          			<Text style={{
-          				fontSize: 20,
-          				color: '#FFF'
-          			}}>SAVE</Text>
-          		</TouchableHighlight>
+				<TouchableHighlight
+					onPress={onSave}
+					style={{
+						alignItems: 'center',
+						backgroundColor: '#337ab7',
+						borderColor: '#337ab7',
+						padding: 20
+					}}>
+					<Text style={{
+						fontSize: 20,
+						color: '#FFF'
+					}}>SAVE</Text>
+				</TouchableHighlight>
 
 			</View>
 		);
@@ -200,7 +191,17 @@ class ItemPreview extends Component {
 
 }
 
-const ItemView = createRenderer (ItemPreview, {
+const ItemView = withRouter ((props) =>
+	<ScrollView
+		automaticallyAdjustContentInsets={false}
+		scrollEventThrottle={200}>
+
+		<ItemPreview {...props}/>
+
+	</ScrollView>
+);
+
+export default createRenderer (ItemView, {
 
 	queries: ViewerQuery,
 
@@ -240,14 +241,4 @@ const ItemView = createRenderer (ItemPreview, {
 			}
 		`
 	}
-});
-
-export default withRouter ((props) =>
-	<ScrollView
-  		automaticallyAdjustContentInsets={false}
-  		scrollEventThrottle={200}>
-
-		<ItemView {...props}/>
-
-	</ScrollView>
-);
+})

@@ -1,30 +1,22 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Relay from 'react-relay';
 
 import {
-    Header,
-    withRouter
-} from 'react-router-native';
-
-
-import {
-	TouchableOpacity,
-  	ScrollView,
+	StyleSheet,
+	View,
 	Text,
-  	View,
-	StyleSheet
+	TouchableOpacity
 } from 'react-native';
 
-import {createRenderer} from '../../../lib/relay-utils';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
 	item: {
 		flex: 1,
 		borderWidth: 0.5,
-    	borderColor: '#d6d7da',
-    	padding: 20,
-    	backgroundColor: '#FFF',
-    	position: 'relative'
+		borderColor: '#d6d7da',
+		padding: 20,
+		backgroundColor: '#FFF',
+		position: 'relative'
 	},
 	close: {
 		flex: 1,
@@ -41,31 +33,31 @@ const styles = StyleSheet.create({
 
 
 const ItemPreview =  ((props) => {
-    const {item} = props;
+	const {item} = props;
 
-    return (
-    	<TouchableOpacity
-    		underlayColor='transparent'
-    		onPress={() => props.onNavigate (item.id)}>
+	return (
+		<TouchableOpacity
+			underlayColor="transparent"
+			onPress={() => props.onNavigate (item.id)}>
 
-    		<View style={styles.item}>
+			<View style={styles.item}>
 
-	        	<Text style={{
-	        		fontSize: 20
-	        	}}>{item.name}</Text>
+				<Text style={{
+					fontSize: 20
+				}}>{item.name}</Text>
 
-	        	<TouchableOpacity
-	        		style={styles.close}
-	        		onPress={() => props.onRemove (item)}>
-	        		<Text style={{
-	        			color: 'red',
-	        			fontSize: 20
-	        		}}>&times;</Text>
-	        	</TouchableOpacity>
-	        </View>
+				<TouchableOpacity
+					style={styles.close}
+					onPress={() => props.onRemove (item)}>
+					<Text style={{
+						color: 'red',
+						fontSize: 20
+					}}>&times;</Text>
+				</TouchableOpacity>
+			</View>
 
-    	</TouchableOpacity>
-    );
+		</TouchableOpacity>
+	);
 });
 
 export default Relay.createContainer (ItemPreview, {

@@ -1,26 +1,14 @@
 import React, {Component} from 'react'
 import Relay from 'react-relay';
 
-// // import Button from 'react-bootstrap/lib/Button';
-// // import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-// // import MenuItem from 'react-bootstrap/lib/MenuItem';
-// // import FormGroup from 'react-bootstrap/lib/FormGroup';
-// // import FormControl from 'react-bootstrap/lib/FormControl';
-
-// // import Tag from '../tag/linked';
-// // import UpdateItemMutation from '../../../mutations/item/update';
-// // import LinkMutation from '../../../mutations/link';
-
 import {
-    withRouter
+	withRouter
 } from 'react-router-native';
 
 import {
 	View,
 	Text,
-	TextInput,
 	StyleSheet,
-	Picker,
 	ScrollView
 } from 'react-native';
 
@@ -79,15 +67,15 @@ class TagPreview extends Component {
 
 				<Text style={styles.header}>{tag.name}</Text>
 
-          		<View>
-          			{tagsItems.edges.map (({node}) =>
-          				<ItemPreview
-          					onNavigate={onNavigate}
-          					onRemove={onRemove}
-          					item={node}
-          					key={node.id}/>
-          			)}
-          		</View>
+				<View>
+					{tagsItems.edges.map (({node}) =>
+						<ItemPreview
+							onNavigate={onNavigate}
+							onRemove={onRemove}
+							item={node}
+							key={node.id}/>
+					)}
+				</View>
 
 			</View>
 		);
@@ -129,8 +117,8 @@ const TagView = createRenderer (TagPreview, {
 
 export default withRouter ((props) =>
 	<ScrollView
-  		automaticallyAdjustContentInsets={false}
-  		scrollEventThrottle={200}>
+		automaticallyAdjustContentInsets={false}
+		scrollEventThrottle={200}>
 
 		<TagView {...props}/>
 

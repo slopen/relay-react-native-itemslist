@@ -4,52 +4,52 @@ const limit = 10;
 
 export default class List extends Component {
 
-    constructor (props) {
-        super (props);
+	constructor (props) {
+		super (props);
 
-        this.state = {};
-    }
+		this.state = {};
+	}
 
-    static limit = limit
+	static limit = limit
 
-    getItems () {
-        return {edges: []};
-    }
+	getItems () {
+		return {edges: []};
+	}
 
-    requestNext = (e) => {
-        const {edges} = this.getItems ();
+	requestNext = () => {
+		const {edges} = this.getItems ();
 
-        this.setState ({
-            loading: true
-        });
+		this.setState ({
+			loading: true
+		});
 
-        this.props.relay.setVariables ({
-            first: edges.length + limit
-        }, ({done}) => done && this.setState ({
-            loading: false
-        }));
-    }
+		this.props.relay.setVariables ({
+			first: edges.length + limit
+		}, ({done}) => done && this.setState ({
+			loading: false
+		}));
+	}
 
-    onScroll = (e) => {
-        if (this.state.loading) {
-            return;
-        }
+	onScroll = (e) => {
+		if (this.state.loading) {
+			return;
+		}
 
-        const {
-            contentSize,
-            contentInset,
-            contentOffset,
-            layoutMeasurement,
-        } = e.nativeEvent;
+		const {
+			contentSize,
+			contentInset,
+			contentOffset,
+			layoutMeasurement
+		} = e.nativeEvent;
 
-        const distance = contentSize.height +
-            contentInset.bottom - contentOffset.y -
-            layoutMeasurement.height;
+		const distance = contentSize.height +
+			contentInset.bottom - contentOffset.y -
+			layoutMeasurement.height;
 
-        const {pageInfo} = this.getItems ();
+		const {pageInfo} = this.getItems ();
 
-        if (pageInfo.hasNextPage && distance <  100) {
-            this.requestNext ();
-        }
-    }
+		if (pageInfo.hasNextPage && distance <  100) {
+			this.requestNext ();
+		}
+	}
 }

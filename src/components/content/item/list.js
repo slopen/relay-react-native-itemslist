@@ -1,18 +1,17 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Relay from 'react-relay';
 
 import {
-    Header,
-    withRouter
+	withRouter
 } from 'react-router-native';
 
 
 import {
-  	TouchableOpacity,
-  	ActivityIndicator,
-  	ScrollView,
+	TouchableOpacity,
+	ActivityIndicator,
+	ScrollView,
 	Text,
-  	View,
+	View,
 	StyleSheet
 } from 'react-native';
 
@@ -33,46 +32,46 @@ const styles = StyleSheet.create({
 		padding: 3
 	},
 	loader: {
-    	flex: 1,
-    	height: 40,
-    	justifyContent: 'center',
-    	alignItems: 'center'
+		flex: 1,
+		height: 40,
+		justifyContent: 'center',
+		alignItems: 'center'
 	}
 });
 
 
 class ItemsListComponent extends ScrollableList {
 
-    getItems = () => this.props.viewer.items
+	getItems = () => this.props.viewer.items
 
 	onItemNavigate = (id) => {
-    	this.props.router.push ('/item/' + id);
-    }
+		this.props.router.push ('/item/' + id);
+	}
 
 	onItemRemove = (item) => {
 		const {viewer} = this.props;
 
-    	RelayStore.commitUpdate (
-    		new ItemRemoveMutation ({
-    			item: item,
-    			viewer: viewer
-    		})
-    	);
+		RelayStore.commitUpdate (
+			new ItemRemoveMutation ({
+				item: item,
+				viewer: viewer
+			})
+		);
 
-    }
+	}
 
 	onItemAdd = () => {
 		const {viewer} = this.props;
 
-    	RelayStore.commitUpdate (
-    		new ItemCreateMutation ({
-    			name: 'new item',
-    			content: 'new item content',
-    			viewer: viewer
-    		})
-    	);
+		RelayStore.commitUpdate (
+			new ItemCreateMutation ({
+				name: 'new item',
+				content: 'new item content',
+				viewer: viewer
+			})
+		);
 
-    }
+	}
 
 	render () {
 		const {items} = this.props.viewer;
@@ -85,43 +84,43 @@ class ItemsListComponent extends ScrollableList {
 
 
 		return (
-	      	<View>
-	        	<ScrollView
-	        		onScroll={onScroll}
-	          		automaticallyAdjustContentInsets={false}
-	          		scrollEventThrottle={250}
-	          		style={styles.container}>
+			<View>
+				<ScrollView
+					onScroll={onScroll}
+					automaticallyAdjustContentInsets={false}
+					scrollEventThrottle={250}
+					style={styles.container}>
 
-	          		<TouchableOpacity
-	          			onPress={onItemAdd}
-	          			style={{
-	          				alignItems: 'center',
-	          				backgroundColor: '#337ab7',
-	          				borderColor: '#337ab7',
-	          				padding: 20,
-	          			}}>
-	          			<Text style={{
-	          				fontSize: 20,
-	          				color: '#FFF'
-	          			}}>ADD</Text>
-	          		</TouchableOpacity>
+					<TouchableOpacity
+						onPress={onItemAdd}
+						style={{
+							alignItems: 'center',
+							backgroundColor: '#337ab7',
+							borderColor: '#337ab7',
+							padding: 20
+						}}>
+						<Text style={{
+							fontSize: 20,
+							color: '#FFF'
+						}}>ADD</Text>
+					</TouchableOpacity>
 
-	          		{items.edges.map (({node}) =>(
-	          			<ItemPreview
-	          				item={node}
-	          				onNavigate={onItemNavigate}
-	          				onRemove={onItemRemove}
-	          				key={node.id}/>
-	          		))}
+					{items.edges.map (({node}) => (
+						<ItemPreview
+							item={node}
+							onNavigate={onItemNavigate}
+							onRemove={onItemRemove}
+							key={node.id}/>
+					))}
 
-	          		{this.state.loading ? (
-	          			<View style={styles.loader}>
-	          				<ActivityIndicator/>
-	          			</View>
-	          		) : null}
+					{this.state.loading ? (
+						<View style={styles.loader}>
+							<ActivityIndicator/>
+						</View>
+					) : null}
 
-	        	</ScrollView>
-	       	</View>
+				</ScrollView>
+			</View>
 		);
 	}
 }
@@ -155,6 +154,6 @@ export default createRenderer (ItemsList, {
 					}
 				}
 			}
-		`,
-	},
+		`
+	}
 });

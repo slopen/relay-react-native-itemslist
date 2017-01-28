@@ -5,7 +5,6 @@ import {
   nativeHistory
 } from 'react-router-native';
 
-import RelayStore from './store';
 import routes from './components/routes';
 
 

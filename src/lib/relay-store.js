@@ -1,3 +1,7 @@
+// https://github.com/sibelius/react-native-relay-example
+
+/* eslint-disable */
+
 import {Environment} from 'react-relay';
 
 import RelayNetworkDebug from 'react-relay/lib/RelayNetworkDebug';

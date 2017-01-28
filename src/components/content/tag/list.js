@@ -1,18 +1,13 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Relay from 'react-relay';
 
 import {
-    Header,
-    withRouter
+	withRouter
 } from 'react-router-native';
 
-
 import {
-  	TouchableOpacity,
-  	ScrollView,
-	Text,
-  	View,
-	StyleSheet
+	ScrollView,
+	View
 } from 'react-native';
 
 import ViewerQuery from '../../../queries/viewer-query';
@@ -26,36 +21,34 @@ class TagsListComponent extends ScrollableList {
 
 	getItems = () => this.props.viewer.tags
 
-    onItemNavigate = (id) => {
-    	props.router.push ('/tag/' + id);
-    }
+	onItemNavigate = (id) => this.props.router.push ('/tag/' + id)
 
-    render () {
-    	const tags = this.getItems ();
+	render () {
+		const tags = this.getItems ();
 
 		const {
 			onItemNavigate,
 			onScroll
 		} = this;
 
-	    return (
-	      	<View>
-	        	<ScrollView
-	          		automaticallyAdjustContentInsets={false}
-	          		onScroll={onScroll}
-	          		scrollEventThrottle={250}>
+		return (
+			<View>
+				<ScrollView
+					automaticallyAdjustContentInsets={false}
+					onScroll={onScroll}
+					scrollEventThrottle={250}>
 
-	          		{tags.edges.map (({node}) =>(
-	          			<TagPreview
-	          				tag={node}
-	          				onNavigate={onItemNavigate}
-	          				key={node.id}/>
-	          		))}
+					{tags.edges.map (({node}) => (
+						<TagPreview
+							tag={node}
+							onNavigate={onItemNavigate}
+							key={node.id}/>
+					))}
 
-	        	</ScrollView>
-	       	</View>
-	    );
-    }
+				</ScrollView>
+			</View>
+		);
+	}
 }
 
 const TagsList = withRouter ((props) =>
@@ -86,7 +79,7 @@ export default createRenderer (TagsList, {
 					}
 				}
 			}
-		`,
-	},
+		`
+	}
 });
 

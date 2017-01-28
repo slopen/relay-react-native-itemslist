@@ -1,3 +1,7 @@
+// https://github.com/sibelius/react-native-relay-example
+
+/* eslint-disable */
+
 // @flow
 // reference code: https://gist.github.com/janicduplessis/f513032eb37cdde5d050d9ce8cf0b92a
 
